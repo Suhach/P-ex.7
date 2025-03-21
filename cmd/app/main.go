@@ -6,28 +6,35 @@ import (
 	"P_ex.7/internal/database"
 	"P_ex.7/internal/taskHandlers"
 	"P_ex.7/internal/taskService"
+	"P_ex.7/internal/userHandlers"
+	"P_ex.7/internal/userService"
 	"P_ex.7/internal/web/tasks"
+	"P_ex.7/internal/web/users"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	database.InitDB()
-	err := database.DB.AutoMigrate(&taskService.Task{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	repo := taskService.NewTaskRepository(database.DB)
-	service := taskService.NewService(repo)
-	handler := taskHandlers.NewHandler(service)
-
+	//task
+	taskrepo := taskService.NewTaskRepository(database.DB)
+	taskservice := taskService.NewService(taskrepo)
+	taskhandler := taskHandlers.NewHandler(taskservice)
+	//user
+	userrepo := userService.NewTaskRepository(database.DB)
+	userservice := userService.NewService(userrepo)
+	userhandler := userHandlers.NewHandler(userservice)
+	//
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
-	strictHandler := tasks.NewStrictHandler(handler, nil)
-	tasks.RegisterHandlers(e, strictHandler)
-
+	//task
+	tskstrictHandler := tasks.NewStrictHandler(taskhandler, nil)
+	tasks.RegisterHandlers(e, tskstrictHandler)
+	//user
+	usrstrictHandler := users.NewStrictHandler(userhandler, nil)
+	users.RegisterHandlers(e, usrstrictHandler)
+	//
 	log.Println("Starting server at :8080")
 	e.Logger.Fatal(e.Start(":8080"))
 }
