@@ -13,9 +13,9 @@ migrate-down:
 run:
 	go run D:\RestAPI\P-ex.7\cmd\app\main.go
 
-gen tsk:
+gen-tsk:
 	oapi-codegen -config openapi/.openapi -include-tags tasks -package tasks openapi/openapi.yaml > ./internal/web/tasks/api.gen.go
-gen usr:
+gen-usr:
 	oapi-codegen -config openapi/.openapi -include-tags users -package users openapi/openapi.yaml > ./internal/web/users/api.gen.go
 
 lint:
