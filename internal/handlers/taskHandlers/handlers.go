@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"P_ex.7/internal/service/taskService"
+	"P_ex.7/internal/services/taskService"
 	"P_ex.7/internal/web/tasks"
 	"gorm.io/gorm"
 )
