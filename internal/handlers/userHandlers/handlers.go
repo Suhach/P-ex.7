@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"P_ex.7/internal/services/userService"
-	"P_ex.7/internal/web/users"
+	"task_user_RestAPI/internal/models"
+	"task_user_RestAPI/internal/services/userService"
+	"task_user_RestAPI/internal/web/users"
+
 	"gorm.io/gorm"
 )
 
@@ -41,7 +43,7 @@ func (h *Handler) PostUsers(_ context.Context, request users.PostUsersRequestObj
 	if userRequest.Email == nil || userRequest.Pass == nil {
 		return nil, errors.New("invalid input: email and pass are required")
 	}
-	userToCreate := &userService.User{
+	userToCreate := &models.User{
 		Email: *userRequest.Email,
 		Pass:  *userRequest.Pass,
 	}

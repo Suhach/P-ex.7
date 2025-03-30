@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"P_ex.7/internal/services/taskService"
-	"P_ex.7/internal/web/tasks"
+	"task_user_RestAPI/internal/models"
+	"task_user_RestAPI/internal/services/taskService"
+	"task_user_RestAPI/internal/web/tasks"
+
 	"gorm.io/gorm"
 )
 
@@ -39,14 +41,15 @@ func (h *Handler) GetTasks(_ context.Context, _ tasks.GetTasksRequestObject) (ta
 // PostTasks создает новую задачу.
 func (h *Handler) PostTasks(_ context.Context, request tasks.PostTasksRequestObject) (tasks.PostTasksResponseObject, error) {
 	taskRequest := request.Body
-	if taskRequest.Task == nil || taskRequest.IsDone == nil {
-		return nil, errors.New("invalid input: task and is_done are required")
+	if taskRequest.Task == nil || taskRequest.IsDone == nil || taskRequest.UserId == nil {
+		return nil, errors.New("invalid input: task, is_done and user_id are required")
 	}
 
 	// Создаем задачу с использованием указателя
-	taskToCreate := &taskService.Task{
+	taskToCreate := &models.Task{
 		Task:   *taskRequest.Task,
 		IsDone: *taskRequest.IsDone,
+		UserID: *taskRequest.UserId,
 	}
 
 	// Передаем указатель на taskToCreate в CreateTask
@@ -59,6 +62,7 @@ func (h *Handler) PostTasks(_ context.Context, request tasks.PostTasksRequestObj
 		Id:     &taskToCreate.ID,
 		Task:   &taskToCreate.Task,
 		IsDone: &taskToCreate.IsDone,
+		UserId: &taskToCreate.UserID,
 	}
 	return response, nil
 }
@@ -123,6 +127,25 @@ func (h *Handler) GetTasksId(_ context.Context, request tasks.GetTasksIdRequestO
 		Id:     &task.ID,
 		Task:   &task.Task,
 		IsDone: &task.IsDone,
+	}
+	return response, nil
+}
+
+// GetTasksUserUserId получает все задачи конкретного пользователя.
+func (h *Handler) GetTasksUserUserId(_ context.Context, request tasks.GetTasksUserUserIdRequestObject) (tasks.GetTasksUserUserIdResponseObject, error) {
+	userTasks, err := h.Service.GetTasksByUserID(request.UserId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tasks for user %d: %w", request.UserId, err)
+	}
+
+	response := make(tasks.GetTasksUserUserId200JSONResponse, len(userTasks))
+	for i, tsk := range userTasks {
+		response[i] = tasks.Task{
+			Id:     &tsk.ID,
+			Task:   &tsk.Task,
+			IsDone: &tsk.IsDone,
+			UserId: &tsk.UserID,
+		}
 	}
 	return response, nil
 }

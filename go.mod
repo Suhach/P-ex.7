@@ -1,6 +1,6 @@
-module P_ex.7
+module task_user_RestAPI
 
-go 1.24.1
+go 1.22.1
 
 require (
 	github.com/labstack/echo/v4 v4.13.3
